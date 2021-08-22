@@ -1,0 +1,19 @@
+{
+    "Devices" : [
+        {
+            "Id" : "ee3cbaca-28bc-450f-a5d8-deb3d4653a97",
+            "Name": "NanoLeaf Canvas",
+            "Description" : "Nanoleaf lights",
+            "Room" : "Зал",
+            "Type" : "devices.types.light",
+            "Capabilities" : [{
+                "Type" : "devices.capabilities.on_off",
+                "Retrievable": true,
+                "Reportable": false,
+                "Parameters": {
+                    "Split" : false
+                }
+            }]
+        }
+    ]
+}

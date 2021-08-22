@@ -16,12 +16,46 @@ open AlicaTranslator.HttpHandlers
 
 let webApp =
     choose [
-        subRoute "/api"
-            (choose [
-                GET >=> choose [
-                    route "/hello" >=> handleGetHello
-                ]
-            ])
+        subRoute "/auth" (
+            choose [
+                GET >=> fakeAuthHandler
+                subRoute "/token" (
+                    choose [
+                        POST >=> fakeTokenHandler
+                    ]
+                )
+            ]
+        )
+        subRoute "/v1.0" (
+            choose [
+                subRoute "/user" (
+                    choose [
+                        subRoute "/devices" (
+                            choose [
+                                GET >=> getDevicesHandler
+                                subRoute "/query" (
+                                    choose [
+                                        POST >=> setStatusCode 500
+                                    ]
+                                )
+                                subRoute "/action" (
+                                    choose [
+                                        POST >=> setStatusCode 500
+                                    ]
+                                )
+                            ]
+                        )
+                        subRoute "/unlink" (
+                            choose [
+                                POST >=> setStatusCode 200
+                            ]
+                        )
+                    ]
+                )
+                HEAD >=> setStatusCode 200
+            ]
+        )
+ 
         setStatusCode 404 >=> text "Not Found" ]
 
 // ---------------------------------
