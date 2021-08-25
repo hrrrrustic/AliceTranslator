@@ -35,7 +35,7 @@ let webApp =
                                 GET >=> getDevicesHandler
                                 subRoute "/query" (
                                     choose [
-                                        POST >=> setStatusCode 500
+                                        POST >=> queryDevicesHandler
                                     ]
                                 )
                                 subRoute "/action" (

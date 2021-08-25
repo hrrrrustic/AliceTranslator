@@ -5,11 +5,15 @@ module HttpHandlers =
     open Microsoft.AspNetCore.Http
     open FSharp.Control.Tasks
     open Giraffe
-    open AlicaTranslator.Models
+    open AlicaTranslator.Models.DeviceTypes
     open Newtonsoft.Json
+    open DeviceDiscovery.Models
+    open Nanoleaf.Client
+    open Nanoleaf.Client.Discovery
+    open System.Linq
 
     let fakeTokenHandler next ctx =
-        task{
+        task {
             let response = {
                 TokenType = "random string"; 
                 ExpiresIn = System.Int32.MaxValue; 
@@ -28,16 +32,22 @@ module HttpHandlers =
             return! redirectTo true redirectUrl next ctx
         }
 
-    let getDevices =
-        task {
-            let! file = readFileAsStringAsync "Devices.json"
-            return JsonConvert.DeserializeObject<List<Device>> file
+    let getDevices() =
+        async {
+            let! file = readFileAsStringAsync "Devices.json" |> Async.AwaitTask
+            return JsonConvert.DeserializeObject<List<Device>> file 
         }
 
     let getDevicesHandler next ctx =
         task {
-            let devices = getDevices
+            let devices = getDevices()
             return! json devices next ctx
         }
 
+    let nanoLeafClient = new NanoleafClient("192.168.1.108", "fgzg8imTMDJiHJKDcv3BHYQ42IJaXequ")
 
+    let queryDevicesHandler next ctx = 
+        task {
+            let! powerStatus = nanoLeafClient.GetPowerStatusAsync() |> Async.AwaitTask
+            return! json "ok" next ctx
+        }
