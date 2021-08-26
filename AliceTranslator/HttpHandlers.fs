@@ -1,16 +1,13 @@
-namespace AlicaTranslator
+namespace AliceTranslator
 
 module HttpHandlers =
 
     open Microsoft.AspNetCore.Http
     open FSharp.Control.Tasks
     open Giraffe
-    open AlicaTranslator.Models.DeviceTypes
-    open Newtonsoft.Json
-    open DeviceDiscovery.Models
-    open Nanoleaf.Client
-    open Nanoleaf.Client.Discovery
-    open System.Linq
+    open AliceTranslator.Models.DeviceDescription
+    open AliceTranslator.NanoLeaf.NanoLeafService
+    open AliceTranslator.Models.DeviceAction
 
     let fakeTokenHandler next ctx =
         task {
@@ -32,22 +29,23 @@ module HttpHandlers =
             return! redirectTo true redirectUrl next ctx
         }
 
-    let getDevices() =
-        async {
-            let! file = readFileAsStringAsync "Devices.json" |> Async.AwaitTask
-            return JsonConvert.DeserializeObject<List<Device>> file 
-        }
-
     let getDevicesHandler next ctx =
         task {
-            let devices = getDevices()
-            return! json devices next ctx
+            let response = getDevicesResponse()
+            return! json response next ctx
         }
 
-    let nanoLeafClient = new NanoleafClient("192.168.1.108", "fgzg8imTMDJiHJKDcv3BHYQ42IJaXequ")
-
-    let queryDevicesHandler next ctx = 
+    let queryDevicesHandler next ctx =
         task {
-            let! powerStatus = nanoLeafClient.GetPowerStatusAsync() |> Async.AwaitTask
-            return! json "ok" next ctx
+            let! powerStatus = getNanoLeafWithOnlyPower nanoLeafClient
+            return! json powerStatus next ctx
+        }
+
+    let actionDeviceHandler next (ctx: HttpContext) =
+        task {
+            let! req = ctx.BindJsonAsync<Request.Request>()
+            let onOff = ((req.Payload.Devices |> Seq.head).Capabilities |> Seq.head).State.Value
+            setNanoLeafPower nanoLeafClient onOff |> Async.AwaitTask |> ignore
+            let response = Response.getSuccessTurnOnResult()
+            return! json response next ctx
         }

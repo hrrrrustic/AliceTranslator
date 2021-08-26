@@ -1,4 +1,4 @@
-module AlicaTranslator.App
+module AliceTranslator.App
 
 open System
 open Microsoft.AspNetCore.Builder
@@ -8,8 +8,9 @@ open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
-open AlicaTranslator.HttpHandlers
-
+open AliceTranslator.HttpHandlers
+open Newtonsoft.Json
+open Newtonsoft.Json.Serialization
 // ---------------------------------
 // Web app
 // ---------------------------------
@@ -40,7 +41,7 @@ let webApp =
                                 )
                                 subRoute "/action" (
                                     choose [
-                                        POST >=> setStatusCode 500
+                                        POST >=> actionDeviceHandler
                                     ]
                                 )
                             ]
@@ -93,6 +94,8 @@ let configureApp (app : IApplicationBuilder) =
 let configureServices (services : IServiceCollection) =
     services.AddCors()    |> ignore
     services.AddGiraffe() |> ignore
+    let jsonSettings = new JsonSerializerSettings(ContractResolver = new DefaultContractResolver(NamingStrategy = SnakeCaseNamingStrategy()))
+    services.AddSingleton<Json.ISerializer>(NewtonsoftJson.Serializer(jsonSettings)) |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
     builder.AddConsole()

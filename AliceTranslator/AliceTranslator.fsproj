@@ -2,24 +2,27 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>AlicaTranslator.App</AssemblyName>
+    <AssemblyName>AliceTranslator.App</AssemblyName>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Giraffe" Version="5.0.0-rc-6" />
     <PackageReference Include="Nanoleaf.Core" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ply" Version="0.3.*" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Models\DeviceShared.fs" />
+    <Compile Include="Models\DeviceDescription.fs" />
+    <Compile Include="Models\DeviceState.fs" />
+    <Compile Include="Models\DeviceAction.fs" />
     <Content Include="Devices.json" />
-    <Compile Include="Device.fs" />
+    <Compile Include="NanoLeafService.fs" />
     <Compile Include="HttpHandlers.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
-  <ItemGroup />
 
   <ItemGroup>
     <None Include="web.config" CopyToOutputDirectory="PreserveNewest" />
