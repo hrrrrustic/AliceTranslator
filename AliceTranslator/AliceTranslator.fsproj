@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>AliceTranslator.App</AssemblyName>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,13 +19,15 @@
     <Compile Include="Models\DeviceDescription.fs" />
     <Compile Include="Models\DeviceState.fs" />
     <Compile Include="Models\DeviceAction.fs" />
-    <Content Include="Devices.json" />
+    <Content Include="Devices.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Compile Include="NanoLeafService.fs" />
     <Compile Include="HttpHandlers.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="web.config" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Dockerfile" />
   </ItemGroup>
 </Project>
